@@ -149,7 +149,8 @@ abstract class sfPHPUnitFunctionalTestCase extends myUnitTestCase
 
         $result .= PHP_EOL . PHP_EOL
                 .  'Trace: ' . PHP_EOL
-                .  PHPUnit_Util_Filter::getFilteredStacktrace($e, false);
+                .  PHPUnit_Util_Filter::getFilteredStacktrace($e, $asString = true)
+        ;
 
         return $result;
     }
