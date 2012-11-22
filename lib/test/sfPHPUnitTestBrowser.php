@@ -108,6 +108,8 @@ class sfPHPUnitTestBrowser extends sfBrowser
         }
 
         $this->notify('postCall');
+
+        return $this;
     }
 
 
