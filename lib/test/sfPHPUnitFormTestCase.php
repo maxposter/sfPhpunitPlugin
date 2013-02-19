@@ -193,6 +193,17 @@ abstract class sfPHPUnitFormTestCase extends myUnitTestCase
     }
 
 
+    /**
+     * ?
+     *
+     * @return array
+     */
+    protected function getValidFiles()
+    {
+        return array();
+    }
+
+
     // Assertions
     // -------------------------------------------------------------------------
 
@@ -446,10 +457,13 @@ abstract class sfPHPUnitFormTestCase extends myUnitTestCase
      */
     public function testAutoFields()
     {
-        $this->assertFormFields(array_keys($this->getFields()), $this->form, get_class($this->form));
+        $fields = array_keys($this->getFields());
+        $input  = array_merge(array_keys($this->getValidInput()), array_keys($this->getValidFiles()));
+
+        $this->assertFormFields($fields, $this->form, get_class($this->form));
 
         // Check getValidData
-        $this->assertFormFields(array_keys($this->getValidInput()), $this->form,
+        $this->assertFormFields($input, $this->form,
             "Expected getValidData() returns all avaliable fields");
     }
 
@@ -482,7 +496,7 @@ abstract class sfPHPUnitFormTestCase extends myUnitTestCase
 
                     # Required
                     case 'required':
-                        $input = $this->getValidInput();
+                        $input = array_merge($this->getValidInput(), $this->getValidFiles());
                         unset($input[$fieldName]);
                         $plan = array($fieldName => array('' => !$value));
                         $error = $value ? $errorCode : false;
@@ -503,7 +517,7 @@ abstract class sfPHPUnitFormTestCase extends myUnitTestCase
                             }
                         }
                         $plan = array($fieldName => $plan);
-                        $this->checkFormWithPlan($form, $plan, $this->getValidInput(), $errorCode, $testName);
+                        $this->checkFormWithPlan($form, $plan, array_merge($this->getValidInput(), $this->getValidFiles()), $errorCode, $testName);
                         break;
 
                     # Max Length
@@ -520,7 +534,7 @@ abstract class sfPHPUnitFormTestCase extends myUnitTestCase
                             }
                         }
                         $plan = array($fieldName => $plan);
-                        $this->checkFormWithPlan($form, $plan, $this->getValidInput(), $errorCode, $testName);
+                        $this->checkFormWithPlan($form, $plan, array_merge($this->getValidInput(), $this->getValidFiles()), $errorCode, $testName);
                         break;
 
                     # Min
@@ -529,7 +543,7 @@ abstract class sfPHPUnitFormTestCase extends myUnitTestCase
                             array(true,  $value),
                             array(false, $value-1),
                         ));
-                        $this->checkFormWithPlan($form, $plan, $this->getValidInput(), $errorCode, $testName);
+                        $this->checkFormWithPlan($form, $plan, array_merge($this->getValidInput(), $this->getValidFiles()), $errorCode, $testName);
                         break;
 
                     # Max
@@ -538,7 +552,7 @@ abstract class sfPHPUnitFormTestCase extends myUnitTestCase
                             array(true,  $value),
                             array(false, $value+1),
                         ));
-                        $this->checkFormWithPlan($form, $plan, $this->getValidInput(), $errorCode, $testName);
+                        $this->checkFormWithPlan($form, $plan, array_merge($this->getValidInput(), $this->getValidFiles()), $errorCode, $testName);
                         break;
 
                     # Invalid
@@ -548,7 +562,7 @@ abstract class sfPHPUnitFormTestCase extends myUnitTestCase
                             $plan[] = array(false, $inputString);
                         }
                         $plan = array($fieldName => $plan);
-                        $this->checkFormWithPlan($form, $plan, $this->getValidInput(), $errorCode, $testName);
+                        $this->checkFormWithPlan($form, $plan, array_merge($this->getValidInput(), $this->getValidFiles()), $errorCode, $testName);
                         break;
 
                     # Success
@@ -558,14 +572,14 @@ abstract class sfPHPUnitFormTestCase extends myUnitTestCase
                             $input[$fieldName] = $inputString;
                             $errorMessage = "{$testName} ({$inputString})";
 
-                            $form->bind($input, array());
+                            $form->bind($input, $this->getValidFiles());
                             $this->assertFormIsValid($form, $errorMessage);
                         }
                         break;
 
                     # Trim
                     case 'trim':
-                        $input = $this->getValidInput();
+                        $input = array_merge($this->getValidInput(), $this->getValidFiles());
                         $expectedString = $input[$fieldName];
                         $input[$fieldName] = " {$expectedString} ";
                         $errorMessage = "{$testName} ({$input[$fieldName]})";
@@ -576,7 +590,7 @@ abstract class sfPHPUnitFormTestCase extends myUnitTestCase
 
                     # Trim
                     case 'transform':
-                        $input = $this->getValidInput();
+                        $input = array_merge($this->getValidInput(), $this->getValidFiles());
                         foreach ($value as $origin => $expected) {
                             $input[$fieldName] = $origin;
                             $errorMessage = "{$testName} ({$input[$fieldName]})";
@@ -647,7 +661,7 @@ abstract class sfPHPUnitFormTestCase extends myUnitTestCase
     public function testAutoFormIsValid()
     {
         $input = $this->getValidInput();
-        $this->form->bind($input, array());
+        $this->form->bind($input, $this->getValidFiles());
         $this->assertFormIsValid($this->form);
 
         if ($this->saveForm && $this->form instanceof sfFormDoctrine) {
