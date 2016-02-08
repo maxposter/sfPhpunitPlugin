@@ -43,6 +43,7 @@ abstract class sfPHPUnitFunctionalTestCase extends myUnitTestCase
         // Initialize SCRIPT_NAME for correct work $this->generateUrl()
         // when $_SERVER is empty before first request
         $_SERVER['SCRIPT_NAME'] = '/index.php';
+        $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
 
         // Init context once for each app
         $this->getContext();
