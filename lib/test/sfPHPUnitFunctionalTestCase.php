@@ -40,6 +40,7 @@ abstract class sfPHPUnitFunctionalTestCase extends myUnitTestCase
      */
     protected function _initialize()
     {
+        parent::_initialize();
         // Initialize SCRIPT_NAME for correct work $this->generateUrl()
         // when $_SERVER is empty before first request
         $_SERVER['SCRIPT_NAME'] = '/index.php';
